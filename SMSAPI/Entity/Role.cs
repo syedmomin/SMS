@@ -1,7 +1,19 @@
-﻿namespace SMS_API.Entity
+namespace SMS_API.Entity
 {
-    public class Role : BaseEntity
+  public class Role : BaseEntity
+  {
+    public string Name { get; set; }
+    public RoleType RoleTypes { get; set; }
+
+    private ICollection<RoleRights>? _roleRights;
+    public ICollection<RoleRights>? RoleRights
     {
-        public string Name { get; set; }
+      get => _roleRights ?? (_roleRights = new List<RoleRights>());
     }
+  }
+  public enum RoleType
+  {
+    Admin = 1,
+    User
+  }
 }
