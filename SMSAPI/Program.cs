@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SMS_API;
 using SMSAPI.Middleware;
@@ -9,7 +9,11 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<ApplicationDbContext>();
+builder.Services.AddDbContext<ApplicationDBContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaulutConnection")));
+
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -52,7 +56,7 @@ if (app.Environment.IsDevelopment())
 }
 using (var serviceScope = app.Services.GetService<IServiceScopeFactory>().CreateScope())
 {
-  var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+  var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
   context.Database.Migrate();
 }
 app.UseCors(builder =>

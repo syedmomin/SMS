@@ -5,12 +5,12 @@ using System.Data;
 
 namespace SMS_API
 {
-  public class ApplicationDbContext : DbContext
+  public class ApplicationDBContext : DbContext
   {
     private readonly IHttpContextAccessor httpContextAccessor;
     private readonly IConfiguration configuration;
-    public ApplicationDbContext(
-            DbContextOptions<ApplicationDbContext> options,
+    public ApplicationDBContext(
+            DbContextOptions<ApplicationDBContext> options,
             IConfiguration configuration,
             IHttpContextAccessor httpContextAccessor)
             : base(options)
@@ -18,17 +18,6 @@ namespace SMS_API
       this.configuration = configuration;
       this.httpContextAccessor = httpContextAccessor;
     }
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-      if (!optionsBuilder.IsConfigured)
-      {
-        optionsBuilder.
-            UseSqlServer(
-                configuration.GetConnectionString("DefaulutConnection") ??
-                      "Server=localhost;Database=SMSDB;Integrated Security=true;TrustServerCertificate=True;");
-      }
-    }
-
     public virtual DbSet<RoleRights> RoleRights { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }

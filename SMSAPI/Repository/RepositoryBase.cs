@@ -13,8 +13,8 @@ namespace SMS_API.Repository
     public abstract class RepositoryBase<T> : IRepositoryBase<T>
         where T : class
     {
-        protected RepositoryBase(ApplicationDbContext repositoryContext) => this.RepositoryContext = repositoryContext;
-        protected ApplicationDbContext RepositoryContext { get; set; }
+        protected RepositoryBase(ApplicationDBContext repositoryContext) => this.RepositoryContext = repositoryContext;
+        protected ApplicationDBContext RepositoryContext { get; set; }
 
         public T Find(int id)
         {
