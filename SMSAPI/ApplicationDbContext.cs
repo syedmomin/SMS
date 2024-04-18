@@ -21,6 +21,7 @@ namespace SMS_API
     public virtual DbSet<RoleRights> RoleRights { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
+    public virtual DbSet<User> Users { get; set; }
 
     public override int SaveChanges(bool acceptAllChangesOnSuccess)
     {
@@ -40,7 +41,6 @@ namespace SMS_API
     {
       var entries = ChangeTracker.Entries();
       var now = DateTime.UtcNow;
-      var user = GetCurrentUser();
 
       foreach (var entry in entries)
       {
@@ -49,24 +49,22 @@ namespace SMS_API
           switch (entry.State)
           {
             case EntityState.Modified:
-              entry.Property("CreatedAt").IsModified = false;
-              entry.Property("CreatedBy").IsModified = false;
+              entry.Property("CreateTime").IsModified = false;
+              entry.Property("CreatedUserId").IsModified = false;
               baseEntity.EditTime = now;
-              baseEntity.EditUserId = "";
+              baseEntity.EditUserId = GetContextClaims(ClaimKey.UserId.ToString());
               break;
 
             case EntityState.Added:
               baseEntity.CreateTime = now;
-              baseEntity.CreatedUserId = "";
+              baseEntity.CreatedUserId = GetContextClaims(ClaimKey.UserId.ToString());
               baseEntity.EditTime = now;
-              baseEntity.EditUserId = "";
+              baseEntity.EditUserId = GetContextClaims(ClaimKey.UserId.ToString());
               break;
           }
         }
       }
     }
-    private string GetCurrentUser() => $"{GetContextClaims("ClaimKey") ?? string.Empty} : {GetContextClaims("ClaimKey") ?? "<unknown>"}";
-
     private string GetContextClaims(string typeName) => this.httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(c => c?.Type == typeName)?.Value;
   }
 

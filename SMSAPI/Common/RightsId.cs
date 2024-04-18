@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using School.Repository;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 
@@ -11,14 +11,12 @@ namespace SMS_API
     {
         public string ControllerId { get; }
         public string Id { get; }
-        public string Caption { get; }
 
-        public RightId(string controllerId, string id,string caption)
+        public RightId(string controllerId, string id)
             : base(typeof(AuthorizeAttribute))
         {
             this.ControllerId = controllerId;
             this.Id = id;
-            this.Caption = caption;
 
             Arguments = new object[] { this.ControllerId, this.Id };
         }
@@ -39,7 +37,7 @@ namespace SMS_API
         {
             if (int.TryParse(context.HttpContext.User.FindFirstValue("RoleId"), out var roleId))
             {
-                var role = await _roleRepository.FindAsync(roleId);
+                var role = await _roleRepository.FindByCondition(o => o.Id == roleId).Include(o => o.RoleRights).FirstOrDefaultAsync();
                 if (!role.RoleRights.Any(o => o.ControllerId == _controllerId && o.ControllerRightsId == _rightId))
                 {
                     context.Result = new ForbidResult();
