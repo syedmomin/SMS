@@ -1,10 +1,6 @@
-// -----------------------------------------------------------------------
-// <copyright file="RepositoryBase.cs" company="Playtertainment">
-// Copyright (c) Playtertainment. All rights reserved.
-// </copyright>
-// -----------------------------------------------------------------------
 
-namespace WinnerWinner.Services.Repository
+
+namespace SMS_API.Repository
 {
     using System;
     using System.Collections.Generic;
@@ -14,7 +10,6 @@ namespace WinnerWinner.Services.Repository
     using Microsoft.EntityFrameworkCore;
     using SMS_API;
 
-    /// <inheritdoc/>
     public abstract class RepositoryBase<T> : IRepositoryBase<T>
         where T : class
     {
@@ -130,7 +125,6 @@ namespace WinnerWinner.Services.Repository
             return await this.RepositoryContext.Set<T>().AnyAsync(expression);
         }
 
-        /// <inheritdoc/>
         public async Task<int> SaveChangesAsync()
         {
             return await this.RepositoryContext.SaveChangesAsync();
