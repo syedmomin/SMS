@@ -11,16 +11,23 @@ namespace SMS_API
   public class UserRepository : RepositoryBase<User>, IUserRepository
   {
     private readonly IConfiguration _configuration;
-    public UserRepository(ApplicationDBContext db, IConfiguration configuration)
+    private readonly IRoleRepository _roleRepository;
+    public UserRepository(ApplicationDBContext db, IConfiguration configuration, IRoleRepository roleRepository)
             : base(db)
     {
       _configuration = configuration;
+      _roleRepository = roleRepository;
     }
     protected override Task WhileInserting(User entity)
     {
       if (string.IsNullOrEmpty(entity.UserName) || string.IsNullOrEmpty(entity.Password))
       {
         throw new ServiceException("Username or password missing");
+      }
+      var role = _roleRepository.FindByCondition(o => o.RoleTypes == RoleType.User).FirstOrDefault();
+      if (role != null)
+      {
+        entity.RoleId = role.Id;
       }
 
       entity.Password = Helper.EnccyptText(entity.Password);
